@@ -1,0 +1,247 @@
+#include <conio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+int main(void) {char c;
+int k1=0, k2=0, i=0, j=0, k=15, bx=0, col=15, bgcol=0, coltmp=0, bgcoltmp=0, symtmp=0, sym=219, text=0, x=65, y=20, z=0;
+int num=0, xx=0, yy=0, cnt=0, f=0, r=0, numtmp=0;
+int screen[40][131]; for (j=0; j<=39; j++) {for (f=0; f<=130; f++) {screen[j][f]=0;}}
+printf("Paint program. Use arrow keys to navigate.\n");
+printf("Pressing delete will escape the mode you are in to give you options, the default is move.\n");
+printf("Menu mode is indicated by the cursor blinking in the top left corner.\n");
+printf("Press Delete key followed by a number to change colour.\n");
+printf("0-white, 1-blue, 2-light blue, 3-green, 4-light green,\n");
+printf("5-red, 6-light red, 7-yellow, 8-purple, 9-grey.\n");
+printf("To draw a box to the right and down press Delete b then a number (1-9).\n");
+printf("To draw a filled box to the right and down press Delete f then a number (1-9).\n");
+printf("To draw a line to the right press Delete l then a number (1-9).\n");
+printf("To draw a vertical line down press Delete v then a number (1-9).\n");
+printf("To change colour (full range 1-15) press Delete c then a number, then press enter.\n");
+for (j=1; j<=15; j++) {_textcolor(j); printf("%d-%c ", j, 219);}
+printf("\nTo change background text colour (full range 1-15) press Delete g then a number, then press enter.\n");
+printf("To change painting symbol press Delete s then a number.\n");
+printf("Note: numbers 0-to 9 represent certain ASCII symbols,\n");
+printf("0-%c  1-%c  2-%c  3-%c  4-%c  5-%c  6-%c  7-%c  8-%c  9-%c\n", 219, 178, 177, 176, 221, 222, 220, 223, 179, 196);
+printf("otherwise all keyboard characters are valid.\n");
+printf("To enter text press Delete t, press escape to escape text mode.\n\n");
+printf("Press any key to continue. "); _gotoxy(x,y);
+z=_getch(); z=0;
+start: _clrscr(); _gotoxy(x,y); sym=219;
+start2:
+while (z==0) {if (y<=0 || y>=39) {y=20;} if (x<=0 || x>=130) {x=60;} _gotoxy(x,y);
+
+k1=_getch(); if (k1==0xE0) {
+k2=_getch(); if (k2==72 || k2==80 || k2==75 || k2==77) {
+if (k2==72) {y--;} if (k2==80) {y++;} if (k2==75) {x--;} if (k2==77) {x++;}		// Move mode, default
+	clear(); _textcolor(15); printf("Move mode %d,%d", x,y); _gotoxy(x,y); }
+
+if (k2==83) {clear(); _textcolor(15); printf("Menu mode"); k=_getch();
+	if (k>=48 && k<=57) {
+	if (k==48 && col!=bgcol) {col=15;}	//white 								// simple change colour
+	if (k==49 && col!=bgcol) {col=1;}	//blue									// Menu then number
+	if (k==50 && col!=bgcol) {col=3;}	//light blue							// for entire range Del-C
+	if (k==51 && col!=bgcol) {col=2;}	//green
+	if (k==52 && col!=bgcol) {col=10;}	//light green	
+	if (k==53 && col!=bgcol) {col=4;}	//red		
+	if (k==54 && col!=bgcol) {col=12;}	//light red
+	if (k==55 && col!=bgcol) {col=6;}	//yellow		
+	if (k==56 && col!=bgcol) {col=5;}	//purple			
+	if (k==57 && col!=bgcol) {col=8;}	//grey									// no black, erase Del-E instead
+		clear(); _gotoxy(1,1); _textcolor(col); printf("%c", sym);
+		_gotoxy(x,y); k=112; goto paint;}
+
+paint:
+if (k==112) {clear(); _textcolor(col); printf("Paint mode %c %d,%d", sym, x, y);					 // del-p paint
+	_textcolor(col); _gotoxy(x,y); printf("%c", sym); _gotoxy(x,y);
+	while (k2!=0) { k1=_getch(); if (k1==0xE0) {k2=_getch(); if (k2==83) {break;}
+	if (k2==72) {y--; _gotoxy(x,y); printf("%c", sym);   _gotoxy(x,y);}
+	if (k2==80) {y++; _gotoxy(x,y); printf("%c", sym);   _gotoxy(x,y);}
+	if (k2==75) {x--; _gotoxy(x,y); printf("%c", sym);   _gotoxy(x,y);}
+	if (k2==77) {x++; _gotoxy(x,y); printf("%c", sym);   _gotoxy(x,y);}
+	clear(); _textcolor(col); printf("Paint mode %c %d,%d", sym, x, y); _gotoxy(x,y);
+		if (y<=0 || y>=39) {y=20;} if (x<=1 || x>=130) {x=60;}}} }
+
+if (k==98) {clear(); _textcolor(col); printf("Box draw ");						// del-b
+	bx=_getch(); if (bx!=0xE0 && bx>=49 && bx<=57) {printf("%c", bx); bx=bx-49;	// draw box down to right of length supplied by next number
+	for (j=1; j<=bx; j++) {x++; _gotoxy(x,y); printf("%c", sym);}
+	for (j=1; j<=bx; j++) {y++; _gotoxy(x,y); printf("%c\n", sym);}
+	for (j=1; j<=bx; j++) {x--; _gotoxy(x,y); printf("%c", sym);}
+	for (j=1; j<=bx; j++) {y--; _gotoxy(x,y); printf("%c\n", sym);}
+	_gotoxy(x,y);}}
+
+if (k==102) {clear();  _textcolor(col); _gotoxy(1,1); printf("Box fill draw ");	// del-f
+bx=_getch(); if (bx!=0xE0 && bx>=49 && bx<=57) {printf("%c", bx);	bx=bx-49;	// draw filled box down to right of length supplied by next number
+for (i=1; i<=bx; i++) {
+	for (j=1; j<=i; j++) {_gotoxy(x,y); printf("%c", sym);x++; }
+	for (j=1; j<=i; j++) {_gotoxy(x,y); printf("%c\n", sym);y++; }
+	for (j=1; j<=i; j++) {_gotoxy(x,y); printf("%c", sym);x--; }
+	for (j=1; j<=i; j++) {_gotoxy(x,y); printf("%c\n", sym);y--; }
+	_gotoxy(x,y);}}}
+
+if (k==108) {clear(); printf("Horizontal line draw ");							// del-l
+		x--; _textcolor(col); bx=_getch(); printf("%c", bx);
+		for (j=1; j<=bx-48; j++) {x++; _gotoxy(x,y); printf("%c", 219);_gotoxy(x,y);}}
+
+if (k==118) {clear(); printf("Vertical line draw  ");							// del-v
+		y--; _textcolor(col); bx=_getch(); printf("%c", bx);
+		for (j=1; j<=bx-48; j++) {y++; _gotoxy(x,y); printf("%c", 219);_gotoxy(x,y);}}
+
+if (k==113) {goto start;}														// Del-Q to clear screen (start again)
+
+if (k==115) {clear();															// del-s
+printf("%c %c %c %c %c %c %c %c %c %c ", 219, 178, 177, 176, 221, 222, 220, 223, 179, 196);
+	sym=_getch();																// change painting symbol													// returns to Paint
+	if (sym==48) {sym=219;}														
+	if (sym==49) {sym=178;}
+	if (sym==50) {sym=177;}
+	if (sym==51) {sym=176;}
+	if (sym==52) {sym=221;}
+	if (sym==53) {sym=222;}
+	if (sym==54) {sym=220;}
+	if (sym==55) {sym=223;}
+	if (sym==56) {sym=179;}
+	if (sym==57) {sym=196;}
+	_gotoxy(x,y); k=112; goto paint;}
+
+text: if (k==116) { xx=x; clear(); _textbackground(bgcol); printf("Text mode");		// print text
+	_gotoxy(xx,y); text=_getch();
+	{while (text!=27) {
+		if (k1!=224) {	 _textcolor(col); 	printf("%c", text); x++; text=_getch();}
+			if (text==27) { _gotoxy(x,y); clear(); printf("Escape text mode"); x++; _gotoxy(x,y);} 
+			if (text==8) { _gotoxy(x,y);printf(" "); x=x-2; } 
+			if (text==13) {y++; _gotoxy(xx, y); printf("wah");_gotoxy(xx, y);}	
+		if (k1=224 && text<=10) {}												// no idea why I need this line: if (k1=224 && text<=75) {}
+	}} _gotoxy(x,y); goto start2; }												// doesn't work without it
+
+if (k==101) {clear(); _textcolor(col); printf("Erase mode");					// del-e erase
+	_textcolor(0); _gotoxy(x,y); printf("%c", 32); _gotoxy(x,y);
+	while (k2!=0) { k1=_getch(); if (k1==0xE0) {k2=_getch(); if (k2==83) {break;}
+	if (k2==72) {y--; _gotoxy(x,y); printf("%c", 32); _gotoxy(x,y);}
+	if (k2==80) {y++; _gotoxy(x,y); printf("%c", 32); _gotoxy(x,y);}
+	if (k2==75) {x--; _gotoxy(x,y); printf("%c", 32); _gotoxy(x,y);}
+	if (k2==77) {x++; _gotoxy(x,y); printf("%c", 32); _gotoxy(x,y);}}}}
+
+if (k==99) {clear(); _gotoxy(1,1); for (j=1; j<=15; j++) {_textcolor(j); printf("%c", 219);}	// del-c colour change
+	 _textcolor(col); 	printf(" #<>%c", 32); scanf("%d", &k);
+	if (k>=1 || k<=15 && col!=bgcol) {col=k;} clear(); k=112; goto paint;}
+
+if (k==103) {clear(); _gotoxy(1,1); _textcolor(col); printf("BG colour change #<>"); scanf("%d", &k);	// del-g
+	if (k!=col) {bgcol=k; _textbackground(bgcol);} _gotoxy(x,y); k=116; goto text; }
+
+if (k==100) {clear(); _textcolor(col); printf("Diagonal mode");					 // del-d diagonal
+	_textcolor(col); _gotoxy(x,y); printf("%c", sym); _gotoxy(x,y);
+	while (k2!=0) { k1=_getch(); if (k1==0xE0) {k2=_getch(); if (k2==83) {break;}
+	if (k2==72) {y--; x--; _gotoxy(x,y); printf("%c", sym); _gotoxy(x,y);}
+	if (k2==80) {y++; x++; _gotoxy(x,y); printf("%c", sym); _gotoxy(x,y);}
+	if (k2==75) {x--; y++;_gotoxy(x,y); printf("%c", sym); _gotoxy(x,y);}
+	if (k2==77) {x++; y--;_gotoxy(x,y); printf("%c", sym); _gotoxy(x,y);}
+		if (y<=0 || y>=39) {y=20;} if (x<=1 || x>=130) {x=60;}}}}
+
+if (k==105) {clear(); _textcolor(15); _gotoxy(1,1); printf("Box 2 draw");
+	_gotoxy(x,y);   printf("%c%c%c%c", 218, 196, 196, 191);						//Del-i print box
+	_gotoxy(x,y+1); printf("%c%c%c%c", 179, 32, 32, 179);
+	_gotoxy(x,y+2); printf("%c%c%c%c", 192, 196, 196, 217); _gotoxy(x,y);}
+
+if (k==104) {clear(); _textcolor(15); _gotoxy(1,1); printf("Box 3 draw");
+	_gotoxy(x,y);   printf("%c%c%c%c%c", 218, 196, 196, 196, 191);				//Del=h print box
+	_gotoxy(x,y+1); printf("%c%c%c%c%c", 179, 32, 32, 32, 179);
+	_gotoxy(x,y+2); printf("%c%c%c%c%c", 179, 32, 32, 32, 179);
+	_gotoxy(x,y+3); printf("%c%c%c%c%c", 179, 32, 32, 32, 179);
+	_gotoxy(x,y+4); printf("%c%c%c%c%c", 179, 32, 32, 32, 179);
+	_gotoxy(x,y+5); printf("%c%c%c%c%c", 192, 196, 196, 196, 217);_gotoxy(x,y);}
+
+if (k==122) {k=ss();}															// del-z
+
+if (k==120) {clear();															// del-x
+printf("Full ASCII number #<>: ");
+	scanf("%d", &sym);															// change painting symbol													// returns to Paint
+	_gotoxy(x,y); k=112; goto paint;}
+
+if (k==114) {																	// del-r open and print a text file
+FILE *fp1=fopen("bmp1.txt", "r");
+fp1=fopen("bmp1.txt", "r"); yy=y; xx=x; _gotoxy(x,y);
+	while ((f=fgetc(fp1))!=EOF) { 
+if (f!='\n') {printf("%c", f);}
+			
+if (f=='\n') {y++; _gotoxy(xx,y);  f=0;  x=xx; _gotoxy(xx,y); }}
+fclose(fp1);x=xx+6; y=yy;  _gotoxy(x,y);} 
+
+
+if (k==121) {num=0; coltmp=col; bgcoltmp=bgcol; symtmp=sym; yy=y; xx=x;
+FILE *fp1=fopen("flag.txt", "r");
+fp1=fopen("flag.txt", "r");
+while ((f=fgetc(fp1))!=EOF) {
+if (f!=' ' && f!='\n') { num=(num*10)+(f-48);}
+if (f==' ' || f=='\n') { 
+	//if (num==0) {}
+	if (num==999) {break;}														// quit file read, conditions left as set up by file
+	if (num==998) {x=xx; y=yy; _gotoxy(x,y); col=coltmp; bgcol=bgcoltmp; sym=symtmp; num=0; break;}	// go to file calling point, restore pre file load conditions
+	if (num==997) {_clrscr(); num=0;}											// clear screen	
+	if (num>=1 && num <=15) {col=num; _textcolor(col); num=0;}					// change text colour
+	if (num>=16 && num <=31) {col=num-16; _textbackground(bgcol); num=0;}		// change background text colour
+	if (num>=32 && num<=255) {printf("%c", num); numtmp=num; num=0; }			// print ASCII characters
+	if (num==256) {x++; _gotoxy(x,y); num=0;}									// move right one
+	if (num==257) {y++; _gotoxy(x,y); num=0;}									// move down one
+	if (num==258) {x--; _gotoxy(x,y); num=0;}									// move left one
+	if (num==259) {y--; _gotoxy(x,y); num=0;}									// move up one
+	if (num>=401 && num<=530) {x=num-400; _gotoxy(x,y); num=0;}					// go to change in x
+	if (num>=601 && num<=639) {y=num-600; _gotoxy(x,y); num=0;}					// go to change in y
+	if (num>=261 && num<=299) {r=num-260; //_gotoxy(x,y);						// repeat // 900-965?
+		for (j=1; j<=r; j++) {printf("%c", numtmp);} numtmp=0; num=0; r=0;}
+
+
+
+}}
+fclose(fp1);} 
+
+
+if (k==106) {_textcolor(col);													// del-j draw grid
+					for (j=1; j<=39; j++) {for (f=1; f<=130; f++) {
+					printf("%c", 197); if (f==130) {printf("\n");}}}_gotoxy(65,20);}
+
+
+if (k==76) {landscape();}
+
+
+
+}}}
+return 0;}
+
+int clear() { int j;
+_gotoxy(1,1); _textbackground(0); for (j=1; j<=23; j++) {printf("%c",32);}
+_gotoxy(1,1);}
+
+ss() {
+int a,b,d,p,x,xx,y,j,col;
+srand (time(NULL));
+_clrscr(); _gotoxy(1,1); for (j=1; j<=702; j++) {printf("I quit.");}
+while (y<=999) {if (y<=0) {y=37;}
+xx=(rand()%133)+1;
+p=(rand()%3)+1;
+a=(rand()%6)+1; 
+d=(rand()%5)+1; 
+if (d==1) {col=1;} if (d==2) {col=3;} if (d==3) {col=9;} if (d==4) {col=11;} if (d==5) {d=7;}
+_gotoxy(xx,y); y--; if (p==1) {x=x-2;} if (p==0) {x=x;} if (p==2) {x=x+2;} 
+if (x>=132 || x<=1) {x=60;}
+_textcolor(col);
+if (a==1) {printf("I", 176);}
+if (a==2) {printf("q", 177);}
+if (a==3) {printf("u", 178);}
+if (a==4) {printf("i", 219);}
+if (a==5) {printf("t", 32);}
+if (a==6) {printf(" ", 32);}}
+return (0);}
+
+int landscape() {
+int a=1, b=1, c, j, x=1, y=32;
+ _textcolor(2); 
+for (j=1; j<=131; j++) {a=(rand()%3)+1;
+		if (a==3 && y>=38) {_textcolor(1); a=2;}
+		if (y>=39) {y--; _textcolor(1); a=2;}
+			if (a==1) {_textcolor(2); _gotoxy(j,y); printf("/");y--;}
+			if (a==2) {_gotoxy(j,y); printf("%c", 95);}
+			if (a==3) {y++; _textcolor(2); _gotoxy(j,y); printf("\\");}
+
+
+		} _textcolor(15); 
+}
